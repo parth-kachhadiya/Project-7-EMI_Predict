@@ -24,4 +24,4 @@ class DataTransformationArtifact:
 
 @dataclass
 class ModelTrainerArtifacts:
-    pass
+    model_artifact_dir_name: str

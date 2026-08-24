@@ -176,5 +176,10 @@ class ModelTrainer:
 
             logging.info(f"All traces saved to artifacts.....")
 
+            artifacts = ModelTrainerArtifacts(
+                model_artifact_dir_name = self._config.model_destination_path
+            )
+
+            return artifacts
         except Exception as e:
             raise MyException(e, sys)
