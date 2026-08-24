@@ -9,3 +9,15 @@ class DataIngestionArtifact:
     test_clf:str
     train_reg:str
     test_reg:str
+
+@dataclass
+class DataTransformationArtifact:
+    xtrain_t_path: str 
+    xtest_t_path: str 
+    xtrain_resampled_path: str
+    ytrain_cls_final_path: str
+    ytest_cls_final_path: str
+    ytrain_reg: str
+    ytest_reg: str
+    transformer_object_file_path: str
+    labelencoder_file_path:str

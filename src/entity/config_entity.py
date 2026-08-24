@@ -26,3 +26,18 @@ class DataIngestionConfig:
     test_reg: str = os.path.join(data_ingestion_dir, DATA_INGESTION_INGESTED_DIR, Y_TEST_REG)
     train_test_split_ratio: float = DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO
     source_file_loc: str = os.path.join(DATA_INGESTION_SOURCE_FILE_PATH, DATA_INGESTION_FILE_NAME)
+
+
+@dataclass
+class DataTransformationConfig:
+    data_transformation_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_TRANSFORMATION_DIR_NAME)
+    xtrain_t_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, XTRAIN_T_FNAME)
+    xtest_t_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, XTEST_T_FNAME)
+    xtrain_resampled_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, XTRAIN_RS_FNAME)
+    ytrain_cls_final_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, YTRAIN_CLSF_FNAME)
+    ytest_cls_final_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, YTEST_CLSF_FNAME)
+    ytrain_reg: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, YTRAIN_REG_FNAME)
+    ytest_reg: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR, YTEST_REG_FNAME)
+
+    transformer_object_file_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR, COL_TRANSFORMER_FNAME)
+    labelencoder_file_path:str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR, LABEL_ENCODER_FNAME)

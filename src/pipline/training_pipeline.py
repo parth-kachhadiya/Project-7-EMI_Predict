@@ -3,10 +3,11 @@ from src.exception import MyException
 from src.logger import logging
 
 from src.components.data_ingestion import DataIngestion
+from src.components.data_transformation import DataTransformation
 
-from src.entity.config_entity import (DataIngestionConfig)
+from src.entity.config_entity import (DataIngestionConfig, DataTransformationConfig)
                                           
-from src.entity.artifact_entity import (DataIngestionArtifact)
+from src.entity.artifact_entity import (DataIngestionArtifact, DataTransformationArtifact)
 
 
 class TrainingPipeline:
@@ -21,13 +22,18 @@ class TrainingPipeline:
         ingestor = DataIngestion(self.ingestion_config)
         ingestion_artifact = ingestor.ingestor()
 
-        logging.info("--------------------------------< Ingestion Done >--------------------------------")
+        logging.info("--------------------------------< Ingestion Done :) >--------------------------------")
 
         return ingestion_artifact
 
+    def s2_do_dataTransformation(self, ingestionArtifact : DataIngestionArtifact) -> DataTransformationArtifact:
+        transformer = DataTransformation(ingestionArtifact)
+        transformationArtifact = transformer.transformer()
+        return transformationArtifact
 
     def run_pipeline(self) -> None:
         try:
             s1_artifact = self.s1_do_dataIngestion()
+            s2_artifact = self.s2_do_dataTransformation(s1_artifact)
         except Exception as e:
             raise MyException(e, sys)
