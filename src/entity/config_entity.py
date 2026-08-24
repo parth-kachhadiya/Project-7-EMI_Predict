@@ -41,3 +41,11 @@ class DataTransformationConfig:
 
     transformer_object_file_path: str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR, COL_TRANSFORMER_FNAME)
     labelencoder_file_path:str = os.path.join(data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR, LABEL_ENCODER_FNAME)
+
+
+@dataclass
+class ModelTrainingConfig:
+    model_params_config_file: str = PARAMS_PATH
+    model_destination_path: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_DIR_PATH)
+    cls_dir: str = os.path.join(model_destination_path, CLS_DIR)
+    reg_dir: str = os.path.join(model_destination_path, REG_DIR)

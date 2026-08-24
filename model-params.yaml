@@ -1,0 +1,38 @@
+classification-models:
+  logistic-regression:
+    C : 9.74787
+    penalty : "l2"
+    solver : "lbfgs"
+    max_iter : 1000
+    random_state : 34
+  random-forest-classifier:
+    n_estimators : 350
+    max_depth : 19
+    min_samples_leaf : 2
+  xgb-classifier:
+    n_estimators : 450
+    max_depth : 50
+    learning_rate : 0.2913
+    subsample : 0.9877
+    colsample_bytree : 0.8730
+    tree_method : "hist"
+    eval_metric : "mlogloss"
+    random_state : 34
+
+regression-models:
+  linear-regressor:
+    fit_intercept : true
+  random-forest-regressor:
+    n_estimators : 100
+    max_depth : 18
+    min_samples_leaf : 2
+    random_state : 34
+  xgb-regressor:  
+    n_estimators : 450
+    max_depth : 8
+    learning_rate : 0.1370
+    subsample : 0.9893
+    colsample_bytree : 0.6037
+    tree_method : "hist"
+    random_state : 34
+     

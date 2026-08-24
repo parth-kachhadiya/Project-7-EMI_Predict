@@ -21,3 +21,7 @@ class DataTransformationArtifact:
     ytest_reg: str
     transformer_object_file_path: str
     labelencoder_file_path:str
+
+@dataclass
+class ModelTrainerArtifacts:
+    pass
