@@ -25,3 +25,10 @@ class DataTransformationArtifact:
 @dataclass
 class ModelTrainerArtifacts:
     model_artifact_dir_name: str
+
+@dataclass
+class ModelEvaluationArtifacts:
+    should_push_clf : bool
+    should_push_reg : bool
+    clf_path : str
+    reg_path : str

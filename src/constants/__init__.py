@@ -1,6 +1,9 @@
 import os
 from datetime import date
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 
 PIPELINE_NAME: str = ""
@@ -75,10 +78,9 @@ REG_DIR = "regression"
 """
 MODEL Evaluation related constants
 """
-MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02   # Minimum performance improvement as compare to previous model.
-MODEL_BUCKET_NAME = "my-first-mlops-bucket"
-MODEL_PUSHER_S3_KEY = "model-registry"
-
-
-APP_HOST = "0.0.0.0"
-APP_PORT = 5000
+DAGSHUB_REPO = os.getenv("DAGSHUB_REPO")
+DAGSHUB_OWNER = os.getenv("DAGSHUB_OWNER")
+MIN_IMPROVEMENT_NEEDED_REG = 0.02
+MIN_IMPROVEMENT_NEEDED_CLF = 0.02
+CLF_REGISTERED_MODEL = "emi_eligibility_classifier"
+REG_REGISTERED_MODEL = "max_emi_regressor"

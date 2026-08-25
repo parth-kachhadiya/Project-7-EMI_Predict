@@ -49,3 +49,8 @@ class ModelTrainingConfig:
     model_destination_path: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_DIR_PATH)
     cls_dir: str = os.path.join(model_destination_path, CLS_DIR)
     reg_dir: str = os.path.join(model_destination_path, REG_DIR)
+
+@dataclass
+class ModelEvaluationConfig:
+    dagshub_repo_name : str = DAGSHUB_REPO
+    dagshub_repo_owner : str = DAGSHUB_OWNER
