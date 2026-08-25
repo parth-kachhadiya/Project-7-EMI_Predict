@@ -20,6 +20,8 @@ class EvaluateModel:
                 repo_owner = self._config.dagshub_repo_owner,
                 repo_name = self._config.dagshub_repo_name
             )
+            
+            self._config.model_artifact_dir_name = self.artifact.model_artifact_dir_name
         except Exception as e:
             raise MyException(e, sys)
 
@@ -101,6 +103,7 @@ class EvaluateModel:
             logging.info(f"Regression push decision: {should_push_reg} (RMSE={rmse:.2f})")
 
             artifacts = ModelEvaluationArtifacts(
+                model_artifact_dir_name = self._config.model_artifact_dir_name,
                 should_push_clf = should_push_clf,
                 should_push_reg = should_push_reg,
                 clf_path = os.path.join(self.artifact.model_artifact_dir_name, CLS_DIR, "model.pkl"),

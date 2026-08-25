@@ -58,16 +58,24 @@ class ModelTrainer:
 
 
             joblib.dump(clf_model_details['clf_model'], clf_model_path)
+            clf_report = {
+                'model_name': clf_model_details['clf_model_name'],
+                **clf_model_details['clf_metrics']
+            }
             with open(clf_metrics_path, 'w') as f:
-                yaml.safe_dump(clf_model_details['clf_metrics'], f)
+                yaml.safe_dump(clf_report, f)
             logging.info(f"Classification model saved to {clf_model_path}")
 
             reg_model_path = os.path.join(self._config.reg_dir, "model.pkl")
             reg_metrics_path = os.path.join(self._config.reg_dir, "metric.yaml")
             
             joblib.dump(reg_model_details['reg_model'], reg_model_path)
+            reg_report = {
+                'model_name': reg_model_details['reg_model_name'],
+                **reg_model_details['reg_metrics']
+            }
             with open(reg_metrics_path, 'w') as f:
-                yaml.safe_dump(reg_model_details['reg_metrics'], f)
+                yaml.safe_dump(reg_report, f)
             logging.info(f"Regression model saved to {reg_model_path}")
 
         except Exception as e:
@@ -165,10 +173,12 @@ class ModelTrainer:
 
             self._save_models_artifacts(
                 {
+                    'clf_model_name' : best_clf_name,
                     'clf_model' : best_clf_model,
                     'clf_metrics' : best_clf_metrics
                 },
                 {
+                    'reg_model_name' : best_reg_name,
                     'reg_model' : best_reg_model,
                     'reg_metrics' : best_reg_metrics
                 }

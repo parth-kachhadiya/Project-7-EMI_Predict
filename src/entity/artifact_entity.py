@@ -28,7 +28,15 @@ class ModelTrainerArtifacts:
 
 @dataclass
 class ModelEvaluationArtifacts:
+    model_artifact_dir_name: str
     should_push_clf : bool
     should_push_reg : bool
     clf_path : str
     reg_path : str
+
+@dataclass
+class ModelPusherArtifacts:
+    does_clf_pushed : bool
+    does_reg_pushed : bool
+    clf_id : str
+    reg_id : str

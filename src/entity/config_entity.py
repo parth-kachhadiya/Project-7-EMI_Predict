@@ -54,3 +54,9 @@ class ModelTrainingConfig:
 class ModelEvaluationConfig:
     dagshub_repo_name : str = DAGSHUB_REPO
     dagshub_repo_owner : str = DAGSHUB_OWNER
+    model_artifact_dir_name : str = ""
+
+@dataclass
+class ModelPusherConfig:
+    dagshub_repo_name : str = DAGSHUB_REPO
+    dagshub_repo_owner : str = DAGSHUB_OWNER
