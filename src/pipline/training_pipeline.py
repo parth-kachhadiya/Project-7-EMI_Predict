@@ -7,6 +7,7 @@ from src.components.data_transformation import DataTransformation
 from src.components.model_trainer import ModelTrainer
 from src.components.model_evaluation import EvaluateModel
 from src.components.model_pusher import ModelPusher
+
                                           
 from src.entity.artifact_entity import (
     DataIngestionArtifact, 
@@ -15,6 +16,7 @@ from src.entity.artifact_entity import (
     ModelEvaluationArtifacts, 
     ModelPusherArtifacts
 )
+from src.entity.config_entity import ModelPusherConfig
 
 
 class TrainingPipeline:
@@ -45,8 +47,8 @@ class TrainingPipeline:
         artifacts = evaluation.evaluator()
         return artifacts
 
-    def s5_model_pusher(self, meArtifacts : ModelEvaluationArtifacts) -> ModelPusherArtifacts:
-        pusher = ModelPusher(meArtifacts)
+    def s5_model_pusher(self, meArtifacts : ModelEvaluationArtifacts, mpConfig : ModelPusherConfig) -> ModelPusherArtifacts:
+        pusher = ModelPusher(meArtifacts, mpConfig)
         artifacts = pusher.pusher()
         return artifacts
 
@@ -56,6 +58,10 @@ class TrainingPipeline:
             s2_artifact = self.s2_do_dataTransformation(s1_artifact)
             s3_artifact = self.s3_model_training(s2_artifact)
             s4_artifact = self.s4_model_evaluation(s3_artifact)
-            s5_artifact = self.s5_model_pusher(s4_artifact)
+            mpConfig = ModelPusherConfig(
+                transformer_object_file_path = s2_artifact.transformer_object_file_path,
+                labelencoder_file_path = s2_artifact.labelencoder_file_path
+            )
+            s5_artifact = self.s5_model_pusher(s4_artifact, mpConfig)
         except Exception as e:
             raise MyException(e, sys)

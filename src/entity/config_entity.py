@@ -60,3 +60,5 @@ class ModelEvaluationConfig:
 class ModelPusherConfig:
     dagshub_repo_name : str = DAGSHUB_REPO
     dagshub_repo_owner : str = DAGSHUB_OWNER
+    transformer_object_file_path: str = ""
+    labelencoder_file_path: str = ""

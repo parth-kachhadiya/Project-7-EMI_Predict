@@ -43,17 +43,32 @@ class ModelPusher:
         except Exception as e:
             raise MyException(e, sys)
 
-    def _push_model(self, model_path: str, run_name: str, registered_model_name: str, flavor: str, metrix, experiment_name : str) -> str:
+    def _push_model(
+        self, model_path: str, 
+        run_name: str, 
+        registered_model_name: str, 
+        flavor: str, 
+        metrix, 
+        experiment_name : str,
+        preprocessor_path : str,
+        label_encoder_path : str    
+    ) -> str:
         try:
             model = joblib.load(model_path)
 
             mlflow.set_experiment(experiment_name)
+            
             with mlflow.start_run(run_name = run_name):
                 try:
                     mlflow.log_params(model.get_params())
                 except Exception as param_err:
                     logging.info(f"Could not log params (non-fatal): {param_err}")
+                
                 mlflow.log_metrics(metrix)
+
+                mlflow.log_artifact(preprocessor_path, artifact_path = "preprocessing")
+                mlflow.log_artifact(label_encoder_path, artifact_path = "preprocessing")
+
                 if flavor == "xgboost":
                     mlflow.xgboost.log_model(
                         model, artifact_path="model",
@@ -95,7 +110,9 @@ class ModelPusher:
                     registered_model_name = CLF_REGISTERED_MODEL,
                     flavor = "xgboost" if isXGB else "sklearn",
                     metrix = modelMatrix,
-                    experiment_name = "classification experiment"
+                    experiment_name = "classification experiment",
+                    preprocessor_path = self._config.transformer_object_file_path,
+                    label_encoder_path = self._config.labelencoder_file_path
                 )
                 cls_pusher = True
             else:
@@ -115,7 +132,9 @@ class ModelPusher:
                     registered_model_name = REG_REGISTERED_MODEL,
                     flavor= "xgboost" if isXGB else "sklearn",
                     metrix = modelMatrix,
-                    experiment_name = "regression experiment"
+                    experiment_name = "regression experiment",
+                    preprocessor_path = self._config.transformer_object_file_path,
+                    label_encoder_path = self._config.labelencoder_file_path
                 )
                 reg_pusher = True
             else:
