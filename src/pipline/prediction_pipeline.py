@@ -93,7 +93,7 @@ class PredictionPipeline:
 
             return {
                 "emi_eligibility" : clf_prediction,
-                "max_monthly_emi" : reg_prediction
+                "max_monthly_emi" : float(reg_prediction[0])
             }
         except Exception as e:
             raise MyException(e, sys)
