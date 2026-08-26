@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 
 from prometheus_client.parser import text_string_to_metric_families
 
-load_dotenv()
+
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 DAGSHUB_REPO_OWNER = os.getenv("DAGSHUB_REPO_OWNER")
 DAGSHUB_REPO_NAME = os.getenv("DAGSHUB_REPO_NAME")

@@ -1,4 +1,9 @@
 import streamlit as st
+import os
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
 
 st.set_page_config(
     page_title="EMIPredict AI",
