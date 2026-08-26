@@ -1,4 +1,5 @@
 import sys
+import os
 import dagshub
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -8,7 +9,7 @@ from src.logger import logging
 class MLFlowConection:
     """Handles DagsHub/MLflow connection setup and exposes a reusable client."""
 
-    def __init__(self, repo_owner : str, repo_name : str):
+    def __init__(self, repo_owner: str, repo_name: str):
         try:
             self._owner = repo_owner
             self._name = repo_name
@@ -19,9 +20,17 @@ class MLFlowConection:
 
     def _connect(self):
         try:
-            dagshub.init(repo_owner=self._owner, repo_name=self._name, mlflow=True)
+            if not self._owner or not self._name:
+                raise ValueError("Both repo_owner and repo_name should be set")
+
+            tracking_uri = f"https://dagshub.com/{self._owner}/{self._name}.mlflow"
+            mlflow.set_tracking_uri(tracking_uri)
+
+            os.environ['MLFLOW_TRACKING_USERNAME'] = self._owner
+            os.environ['MLFLOW_TRACKING_PASSWORD'] = os.getenv("DAGSHUB_TOKEN")
+
             self._client = MlflowClient()
-            logging.info("MLflow/DagsHub connection established.")
+            logging.info("MLflow/DagsHub connection established (direct URI method).")
         except Exception as e:
             raise MyException(e, sys)
 
