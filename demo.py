@@ -1,9 +1,8 @@
-'''
 from src.pipline.training_pipeline import TrainingPipeline
 
 TrainingPipeline().run_pipeline()
-'''
 
+'''
 from src.pipline.prediction_pipeline import PredictionPipeline
 
 obj = PredictionPipeline()
@@ -37,3 +36,4 @@ data = {
 }
 
 print(obj.predict(data))
+'''
