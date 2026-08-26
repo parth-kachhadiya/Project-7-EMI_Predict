@@ -1,3 +1,4 @@
+import os
 import sys
 from enum import Enum
 from typing import Optional
@@ -6,16 +7,22 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from prometheus_fastapi_instrumentator import Instrumentator
+from dotenv import load_dotenv
 
 from src.exception import MyException
 from src.logger import logging
 from src.pipline.training_pipeline import TrainingPipeline
 from src.pipline.prediction_pipeline import PredictionPipeline
+from src.configuration.mlflow_connection import MLFlowConection
+from src.constants import CLF_REGISTERED_MODEL, REG_REGISTERED_MODEL
+
+load_dotenv()
+
 
 app = FastAPI(title="EMIPredict AI API")
 
 prediction_pipeline: Optional[PredictionPipeline] = None
-
+mlflow_connection: Optional[MLFlowConection] = None
 
 # --- Fixed categorical value sets, enforced via Enum ---
 class Education(str, Enum):
@@ -99,13 +106,79 @@ class ApplicantInput(BaseModel):
 @app.on_event("startup")
 def startup_event():
     """Load model + preprocessor into RAM exactly once, when the API process starts."""
-    global prediction_pipeline
+    global prediction_pipeline, mlflow_connection
     try:
         prediction_pipeline = PredictionPipeline()
         logging.info("Prediction pipeline loaded into memory at API startup.")
     except Exception as e:
         logging.info(f"No models available at startup (train pipeline first): {e}")
         prediction_pipeline = None
+
+    try:
+        mlflow_connection = MLFlowConection(
+            repo_owner=os.getenv("DAGSHUB_OWNER"),
+            repo_name=os.getenv("DAGSHUB_REPO")
+        )
+        logging.info("MLflow connection established at API startup.")
+    except Exception as e:
+        logging.info(f"Could not connect to MLflow: {e}")
+        mlflow_connection = None
+
+
+@app.get("/model_metrics")
+def get_model_metrics():
+    """Returns current registered champion metrics for both classification and regression."""
+    if mlflow_connection is None:
+        raise HTTPException(status_code=503, detail="MLflow connection not available.")
+    try:
+        client = mlflow_connection.get_client()
+        result = {}
+
+        try:
+            clf_version = client.get_latest_versions(CLF_REGISTERED_MODEL)[0]
+            clf_run = client.get_run(clf_version.run_id)
+            result["classification"] = {
+                "version": clf_version.version,
+                "run_id": clf_version.run_id,
+                "metrics": clf_run.data.metrics
+            }
+        except Exception:
+            result["classification"] = None
+
+        try:
+            reg_version = client.get_latest_versions(REG_REGISTERED_MODEL)[0]
+            reg_run = client.get_run(reg_version.run_id)
+            result["regression"] = {
+                "version": reg_version.version,
+                "run_id": reg_version.run_id,
+                "metrics": reg_run.data.metrics
+            }
+        except Exception:
+            result["regression"] = None
+
+        return JSONResponse(content={"status": "success", "data": result})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(MyException(e, sys)))
+
+@app.get("/experiment_runs")
+def get_experiment_runs(experiment_name: str):
+    """Returns run history (name + metrics) for a given experiment name."""
+    if mlflow_connection is None:
+        raise HTTPException(status_code=503, detail="MLflow connection not available.")
+    try:
+        client = mlflow_connection.get_client()
+        experiment = client.get_experiment_by_name(experiment_name)
+        if experiment is None:
+            raise HTTPException(status_code=404, detail=f"Experiment '{experiment_name}' not found.")
+
+        runs = client.search_runs(experiment_ids=[experiment.experiment_id], order_by=["start_time DESC"])
+        rows = [{"run_name": r.info.run_name, **r.data.metrics} for r in runs]
+
+        return JSONResponse(content={"status": "success", "runs": rows})
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(MyException(e, sys)))
 
 
 @app.post("/train")
